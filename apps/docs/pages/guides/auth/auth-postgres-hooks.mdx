@@ -48,12 +48,113 @@ Hooks are used at specific points along an Auth flow known as extensibility poin
 
 ## Use Cases
 
-We provide four extensibility points designed to fit a few commonly requested use cases.
 
-### Custom SMS Sender
 
-### Before Sign Up
+### MFA Verification Attempt
 
-### Custom JWT Claims
+You may wish to increase security beyond the requirements of the [Supabase MFA implementation](https://supabase.com/docs/guides/auth/auth-mfa). You may need to meet compliance requirements set out by your client or you might be working in a field where data is sensitive.
 
-### MFA Verification
+For such scenarios, the MFA Verification Attempt extensibility Point can allow you to add additional checks to:
+
+- Log out users after excessive MFA Verification Attempts.
+- Record additional information during a verification attempt
+
+**Inputs**
+
+- `factor_id` : the unique identifier for the MFA factor the user is using
+- `user_id` : unique identifier for the user
+- `valid` : boolean identifier indicating if the TOTP code for the attempt was valid.
+
+```json
+{
+	"factor_id": "e4165f6f-5abc-4e1f-9699-a350187c1147",
+	"user_id": "044dd682-79cf-412d-b3d0-bb84e24f9dc0",
+	"valid": true,
+}
+```
+
+**Outputs**
+
+If successful, hook should return the following output:
+
+- `decision` : *continue* to proceed with the authentication flow and *reject* to log the user out and reject the attempt
+
+```json
+{
+	"decision": "continue" | "reject"
+}
+```
+
+### Example Hook
+Here’s an example hook for the use case `Log out users after excessive MFA Verification Attempts`. You'll have
+to setup a tracking table outside of the hook.
+
+```sql
+-- Create a verification_attempts table for tracking
+-- Have to grant appropriate permissions of course
+create table public.mfa_verification_attempts (
+    id serial primary key,
+    user_id text not null,
+    factor_id text  not null,
+    attempt_time timestamp not null default now()
+);
+```
+
+```sql
+create or replace function public.track_mfa_verification(_user_id varchar, _factor_id varchar)
+returns jsonb as $$
+declare
+    recent_attempts int;
+begin
+    -- Insert the verification attempt record
+    insert into public.mfa_verification_attempts (user_id, factor_id)
+    values (_user_id, _factor_id);
+
+    -- Check the number of attempts in the past 5 minutes
+    select count(*)
+    into recent_attempts
+    from public.mfa_verification_attempts
+    where factor_id = _factor_id
+      and attempt_time > now() - interval '5 minutes';
+
+    -- Return the verification status
+    if recent_attempts >= 5 then
+        return jsonb_build_object('decision', 'reject');
+    else
+        return jsonb_build_object('decision', 'ok');
+    end if;
+end;
+$$ language plpgsql;
+```
+
+
+
+
+
+
+
+
+
+
+## Creating a Hook
+While you can use the examples above as-is, the examples above might not exactly fit your exact use case. In such scenarios, you can consider writing your own hook.
+
+
+### Writing the Hook
+
+Head to the `SQL Editor > Templates` and select the corresponding template (e.g. `MFA Verification Attempt`). This will generate a function signature for the corresponding extensibility point.
+
+
+### Adding Appropriate Permissions
+
+Supabase Auth will run hooks with permissions of the supabase_auth_admin role which has access to tables on the auth schema and  functions on the public schema . By default, this has access to only the auth schema. If you are looking to access tables outside of the auth schema you will have to explicitly grant permissions to Supabase.
+```sql
+grant select on example.auth_hook to supabase_auth_admin;
+```
+
+## Linking the Hook to an Extensibility Point
+
+After you’ve written the hook you may wish to link the hook so that the function is live. To do so:
+
+1. Head to `Auth > Hooks` and hit `Enable Auth Hooks`
+2. Select the relevant Extensibility Point and Hook function which you wish to link and hit save
