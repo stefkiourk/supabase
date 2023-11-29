@@ -31,6 +31,7 @@ interface SchemaSelectorProps {
   supportSelectAll?: boolean
   onSelectSchema: (name: string) => void
   onSelectCreateSchema?: () => void
+  disabled?: boolean
 }
 
 const SchemaSelector = ({
@@ -39,6 +40,7 @@ const SchemaSelector = ({
   showError = true,
   selectedSchemaName,
   supportSelectAll = false,
+  disabled = false,
   onSelectSchema,
   onSelectCreateSchema,
 }: SchemaSelectorProps) => {
@@ -66,6 +68,7 @@ const SchemaSelector = ({
           type="outline"
           className="w-full [&>span]:w-full"
           icon={<IconLoader className="animate-spin" size={12} />}
+          disabled={!!disabled}
         >
           <div className="w-full flex space-x-3 py-0.5">
             <p className="text-xs text-foreground-light">Loading schemas...</p>
@@ -88,7 +91,7 @@ const SchemaSelector = ({
       )}
 
       {isSchemasSuccess && (
-        <Popover_Shadcn_ open={open} onOpenChange={setOpen} modal={false}>
+        <Popover_Shadcn_ open={open} onOpenChange={setOpen} modal={false} disabled={!!disabled}>
           <PopoverTrigger_Shadcn_ asChild>
             <Button
               size={size}
@@ -97,6 +100,7 @@ const SchemaSelector = ({
               iconRight={
                 <IconCode className="text-foreground-light rotate-90" strokeWidth={2} size={12} />
               }
+              disabled={!!disabled}
             >
               <div className="w-full flex space-x-3 py-0.5">
                 <p className="text-xs text-foreground-light">schema</p>
