@@ -118,11 +118,6 @@ const BillingMetric = ({ slug, metric, usage, subscription }: BillingMetricProps
                   <div className="text-xs text-foreground max-w-sm space-y-2">
                     <p className="font-medium">{usageMeta.unit_price_desc}</p>
 
-                    <p>
-                      Total Usage:{' '}
-                      {formatUsage(usageMeta.metric as PricingMetric, usageMeta.usage_original)}{' '}
-                      {unit}
-                    </p>
                     {usageMeta.project_allocations && usageMeta.project_allocations.length > 0 && (
                       <table className="list-disc w-full">
                         <thead>
@@ -142,6 +137,18 @@ const BillingMetric = ({ slug, metric, usage, subscription }: BillingMetricProps
                           ))}
                           <tr></tr>
                         </tbody>
+                        <tfoot>
+                          <tr className=''>
+                            <td className="py-2 border-t text-left">Total</td>
+                            <td className="py-2 border-t text-right">
+                              {formatUsage(
+                                usageMeta.metric as PricingMetric,
+                                usageMeta.usage_original
+                              )}{' '}
+                              {unit}
+                            </td>
+                          </tr>
+                        </tfoot>
                       </table>
                     )}
 
