@@ -1,9 +1,9 @@
-import { IS_PLATFORM } from 'lib/constants'
 import { ProductMenuGroup } from 'components/ui/ProductMenu/ProductMenu.types'
+import { IS_PLATFORM } from 'lib/constants'
 
 export const generateAuthMenu = (
   ref: string,
-  options?: { hooksReleased?: boolean } = {}
+  options: { hooksReleased?: boolean } = {}
 ): ProductMenuGroup[] => {
   return [
     {

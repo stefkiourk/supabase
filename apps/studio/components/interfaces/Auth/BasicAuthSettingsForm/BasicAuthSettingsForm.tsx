@@ -31,7 +31,7 @@ import UpgradeToPro from 'components/ui/UpgradeToPro'
 import { useAuthConfigQuery } from 'data/auth/auth-config-query'
 import { useAuthConfigUpdateMutation } from 'data/auth/auth-config-update-mutation'
 import { useOrgSubscriptionQuery } from 'data/subscriptions/org-subscription-query'
-import { useCheckPermissions, useSelectedOrganization, useStore, useFlag } from 'hooks'
+import { useCheckPermissions, useFlag, useSelectedOrganization, useStore } from 'hooks'
 
 const schema = object({
   DISABLE_SIGNUP: boolean().required(),
@@ -62,6 +62,8 @@ function HoursOrNeverText({ value }: { value: number }) {
   }
 }
 
+const formId = 'auth-config-basic-settings'
+
 const BasicAuthSettingsForm = observer(() => {
   const { ui } = useStore()
   const { ref: projectRef } = useParams()
@@ -74,7 +76,6 @@ const BasicAuthSettingsForm = observer(() => {
   } = useAuthConfigQuery({ projectRef })
   const { mutate: updateAuthConfig, isLoading: isUpdatingConfig } = useAuthConfigUpdateMutation()
 
-  const formId = 'auth-config-basic-settings'
   const [hidden, setHidden] = useState(true)
   const canUpdateConfig = useCheckPermissions(PermissionAction.UPDATE, 'custom_config_gotrue')
 
@@ -94,10 +95,10 @@ const BasicAuthSettingsForm = observer(() => {
     SECURITY_CAPTCHA_PROVIDER: authConfig?.SECURITY_CAPTCHA_PROVIDER || 'hcaptcha',
     SESSIONS_TIMEBOX: authConfig?.SESSIONS_TIMEBOX || 0,
     SESSIONS_INACTIVITY_TIMEOUT: authConfig?.SESSIONS_INACTIVITY_TIMEOUT || 0,
-
     ...(singlePerUserReleased
       ? {
-          SESSIONS_SINGLE_PER_USER: authConfig?.SESSIONS_SINGLE_PER_USER || false,
+          // TODO: Remove as any once these properties are defined in Auth Config types
+          SESSIONS_SINGLE_PER_USER: (authConfig as any)?.SESSIONS_SINGLE_PER_USER || false,
         }
       : null),
   }

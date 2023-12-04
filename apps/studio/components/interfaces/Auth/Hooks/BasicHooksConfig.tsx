@@ -31,6 +31,8 @@ const schema = object({
   HOOKS_CUSTOMIZE_ACCESS_TOKEN_URI: string(),
 })
 
+const formId = 'auth-basic-hooks-form'
+
 const BasicHooksConfig = observer(() => {
   const { ui, meta } = useStore()
   const { ref: projectRef } = useParams()
@@ -43,7 +45,6 @@ const BasicHooksConfig = observer(() => {
   } = useAuthConfigQuery({ projectRef })
   const { mutate: updateAuthConfig, isLoading: isUpdatingConfig } = useAuthConfigUpdateMutation()
 
-  const formId = 'auth-config-general-form'
   const canUpdateConfig = useCheckPermissions(PermissionAction.UPDATE, 'custom_config_gotrue')
 
   // TODO: Remove as any once these properties are defined in Auth Config types

@@ -1,30 +1,29 @@
 import { PermissionAction } from '@supabase/shared-types/out/constants'
 import { useParams } from 'common'
 import { observer } from 'mobx-react-lite'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
   AlertDescription_Shadcn_,
   AlertTitle_Shadcn_,
   Alert_Shadcn_,
   Form,
   IconAlertCircle,
-  Input,
   Toggle,
 } from 'ui'
-import { object, string, boolean } from 'yup'
+import { boolean, object, string } from 'yup'
 
 import {
   FormActions,
   FormHeader,
   FormPanel,
   FormSection,
-  FormSectionLabel,
   FormSectionContent,
+  FormSectionLabel,
 } from 'components/ui/Forms'
 import { useAuthConfigQuery } from 'data/auth/auth-config-query'
 import { useAuthConfigUpdateMutation } from 'data/auth/auth-config-update-mutation'
 import { useOrgSubscriptionQuery } from 'data/subscriptions/org-subscription-query'
-import { useCheckPermissions, useStore, useSelectedOrganization } from 'hooks'
+import { useCheckPermissions, useSelectedOrganization, useStore } from 'hooks'
 
 import SchemaFunctionSelector from './SchemaFunctionSelector'
 
@@ -63,10 +62,11 @@ const EnterpriseHooksConfig = observer(() => {
     HOOK_MFA_VERIFICATION_ATTEMPT_ENABLED:
       authConfig?.HOOK_MFA_VERIFICATION_ATTEMPT_ENABLED || false,
     HOOK_MFA_VERIFICATION_ATTEMPT_URI: authConfig?.HOOK_MFA_VERIFICATION_ATTEMPT_URI || '',
+    // TODO: Remove as any once these properties are defined in Auth Config types
     HOOK_PASSWORD_VERIFICATION_ATTEMPT_ENABLED:
-      authConfig?.HOOK_PASSWORD_VERIFICATION_ATTEMPT_ENABLED || false,
+      (authConfig as any)?.HOOK_PASSWORD_VERIFICATION_ATTEMPT_ENABLED || false,
     HOOK_PASSWORD_VERIFICATION_ATTEMPT_URI:
-      authConfig?.HOOK_PASSWORD_VERIFICATION_ATTEMPT_URI || '',
+      (authConfig as any)?.HOOK_PASSWORD_VERIFICATION_ATTEMPT_URI || '',
   }
 
   useEffect(() => {
