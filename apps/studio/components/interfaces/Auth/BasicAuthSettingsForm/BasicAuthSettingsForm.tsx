@@ -97,8 +97,7 @@ const BasicAuthSettingsForm = observer(() => {
     SESSIONS_INACTIVITY_TIMEOUT: authConfig?.SESSIONS_INACTIVITY_TIMEOUT || 0,
     ...(singlePerUserReleased
       ? {
-          // TODO: Remove as any once these properties are defined in Auth Config types
-          SESSIONS_SINGLE_PER_USER: (authConfig as any)?.SESSIONS_SINGLE_PER_USER || false,
+          SESSIONS_SINGLE_PER_USER: authConfig?.SESSIONS_SINGLE_PER_USER || false,
         }
       : null),
   }
