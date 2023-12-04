@@ -1,29 +1,28 @@
 import { PermissionAction } from '@supabase/shared-types/out/constants'
 import { useParams } from 'common'
 import { observer } from 'mobx-react-lite'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
   AlertDescription_Shadcn_,
   AlertTitle_Shadcn_,
   Alert_Shadcn_,
   Form,
   IconAlertCircle,
-  Input,
   Toggle,
 } from 'ui'
-import { object, boolean, string } from 'yup'
+import { boolean, object, string } from 'yup'
 
 import {
   FormActions,
   FormHeader,
   FormPanel,
   FormSection,
-  FormSectionLabel,
   FormSectionContent,
+  FormSectionLabel,
 } from 'components/ui/Forms'
 import { useAuthConfigQuery } from 'data/auth/auth-config-query'
 import { useAuthConfigUpdateMutation } from 'data/auth/auth-config-update-mutation'
-import { useCheckPermissions, useStore, useSelectedProject } from 'hooks'
+import { useCheckPermissions, useStore } from 'hooks'
 
 import SchemaFunctionSelector from './SchemaFunctionSelector'
 
@@ -35,7 +34,6 @@ const schema = object({
 const BasicHooksConfig = observer(() => {
   const { ui, meta } = useStore()
   const { ref: projectRef } = useParams()
-  const { selectedProject } = useSelectedProject()
   const {
     data: authConfig,
     error: authConfigError,
@@ -48,9 +46,11 @@ const BasicHooksConfig = observer(() => {
   const formId = 'auth-config-general-form'
   const canUpdateConfig = useCheckPermissions(PermissionAction.UPDATE, 'custom_config_gotrue')
 
+  // TODO: Remove as any once these properties are defined in Auth Config types
   const INITIAL_VALUES = {
-    HOOK_CUSTOMIZE_ACCESS_TOKEN_ENABLED: authConfig?.HOOK_CUSTOMIZE_ACCESS_TOKEN_ENABLED || false,
-    HOOK_CUSTOMIZE_ACCESS_TOKEN_URI: authConfig?.HOOK_CUSTOMIZE_ACCESS_TOKEN_URI || '',
+    HOOK_CUSTOMIZE_ACCESS_TOKEN_ENABLED:
+      (authConfig as any)?.HOOK_CUSTOMIZE_ACCESS_TOKEN_ENABLED || false,
+    HOOK_CUSTOMIZE_ACCESS_TOKEN_URI: (authConfig as any)?.HOOK_CUSTOMIZE_ACCESS_TOKEN_URI || '',
   }
 
   const onSubmit = (values: any, { resetForm }: any) => {
