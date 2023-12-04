@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
+import { useState } from 'react'
 import {
   AlertDescription_Shadcn_,
   AlertTitle_Shadcn_,
@@ -14,17 +14,15 @@ import {
   IconCheck,
   IconCode,
   IconLoader,
-  IconPlus,
   PopoverContent_Shadcn_,
   PopoverTrigger_Shadcn_,
   Popover_Shadcn_,
   ScrollArea,
 } from 'ui'
 
-import { useCheckPermissions, useStore } from 'hooks'
-import { useProjectContext } from 'components/layouts/ProjectLayout/ProjectContext'
 import { convertArgumentTypes } from 'components/interfaces/Database/Functions/Functions.utils'
-import { useSchemasQuery } from 'data/database/schemas-query'
+import { useProjectContext } from 'components/layouts/ProjectLayout/ProjectContext'
+import { useStore } from 'hooks'
 
 interface FunctionSelectorProps {
   className?: string
@@ -44,7 +42,7 @@ const FunctionSelector = ({
   schema,
   selectedFunctionName,
   onSelectFunction,
-}: SchemaSelectorProps) => {
+}: FunctionSelectorProps) => {
   const { project } = useProjectContext()
   const { meta } = useStore()
   const [open, setOpen] = useState(false)
@@ -102,7 +100,7 @@ const FunctionSelector = ({
       )}
 
       {isFunctionsSuccess && (
-        <Popover_Shadcn_ open={open} onOpenChange={setOpen} modal={false} disabled={!!disabled}>
+        <Popover_Shadcn_ open={open} onOpenChange={setOpen} modal={false}>
           <PopoverTrigger_Shadcn_ asChild>
             <Button
               size={size}

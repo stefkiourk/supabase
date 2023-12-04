@@ -91,7 +91,7 @@ const SchemaSelector = ({
       )}
 
       {isSchemasSuccess && (
-        <Popover_Shadcn_ open={open} onOpenChange={setOpen} modal={false} disabled={!!disabled}>
+        <Popover_Shadcn_ open={open} onOpenChange={setOpen} modal={false}>
           <PopoverTrigger_Shadcn_ asChild>
             <Button
               size={size}
